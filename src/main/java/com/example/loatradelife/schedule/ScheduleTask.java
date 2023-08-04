@@ -77,8 +77,7 @@ public class ScheduleTask {
         int addedNoticeCount = 0;
 
         try {
-            HttpURLConnection connection = null;
-            connection = (HttpURLConnection) new URL(lostArkOpenApiConfig.getBaseUrl() + "/news/notices").openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(lostArkOpenApiConfig.getBaseUrl() + "/news/notices").openConnection();
             connection.setRequestProperty("authorization", "bearer " + lostArkOpenApiConfig.getKey());
             connection.setRequestProperty("accept", "application/json");
             connection.setRequestMethod("GET");
