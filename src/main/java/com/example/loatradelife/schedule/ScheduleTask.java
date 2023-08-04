@@ -2,7 +2,10 @@ package com.example.loatradelife.schedule;
 
 import com.example.loatradelife.config.LostArkOpenApiConfig;
 import com.example.loatradelife.domain.Event;
+import com.example.loatradelife.domain.Notice;
+import com.example.loatradelife.domain.NoticeType;
 import com.example.loatradelife.service.EventService;
+import com.example.loatradelife.service.NoticeService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,9 @@ import java.util.Map;
 public class ScheduleTask {
     private final LostArkOpenApiConfig lostArkOpenApiConfig;
     private final EventService eventService;
+    private final NoticeService noticeService;
 
+    // second minute hour date month dayOfWeek
     @Scheduled(cron = "0 */1 * * * *")
     public void getEvents() {
         log.info("start 'getEvents()'::==" + LocalDateTime.now());
@@ -60,6 +65,43 @@ public class ScheduleTask {
 
             log.info("added event count::==" + addedEventCount);
             log.info("end 'getEvents()'::==" + LocalDateTime.now());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // second minute hour date month dayOfWeek
+    @Scheduled(cron = "0 */1 * * * *")
+    public void getNotice() {
+        log.info("start 'getNotice()::==" + LocalDateTime.now());
+        int addedNoticeCount = 0;
+
+        try {
+            HttpURLConnection connection = null;
+            connection = (HttpURLConnection) new URL(lostArkOpenApiConfig.getBaseUrl() + "/news/notices").openConnection();
+            connection.setRequestProperty("authorization", "bearer " + lostArkOpenApiConfig.getKey());
+            connection.setRequestProperty("accept", "application/json");
+            connection.setRequestMethod("GET");
+            connection.connect();
+
+            ObjectMapper ob = new ObjectMapper();
+            List<Map<String, String>> mapList = ob.readValue(connection.getInputStream(), new TypeReference<>() {});
+            for (Map<String, String> x : mapList) {
+                Notice notice = new Notice(
+                        x.get("Title"),
+                        LocalDateTime.parse(x.get("Date"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                        x.get("Link"),
+                        NoticeType.getNoticeType(x.get("Type"))
+                );
+
+                Long result = noticeService.saveNotice(notice);
+                if (result > 0) {
+                    addedNoticeCount++;
+                }
+            }
+
+            log.info("added notice count::==" + addedNoticeCount);
+            log.info("end 'getNotice()::==" + LocalDateTime.now());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
