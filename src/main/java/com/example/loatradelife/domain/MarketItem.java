@@ -14,27 +14,43 @@ public class MarketItem {
     @Column(name = "market_item_id")
     private Long id;
 
+    private Integer categoryCode;
     private Integer code;
     private String name;
-    private Integer tier = 0;
-    private Integer grade;
+    private Integer tier;
     private String imageLink;
     private Boolean useAt;
 
-    public MarketItem(Integer code, String name, Integer tier, Integer grade, String imageLink, Boolean useAt) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "number")
+    private ItemGrade itemGrade;
+
+    public MarketItem(Integer categoryCode, Integer code, String name, Integer tier, ItemGrade itemGrade, String imageLink) {
+        this.categoryCode = categoryCode;
         this.code = code;
         this.name = name;
         this.tier = tier;
-        this.grade = grade;
+        this.itemGrade = itemGrade;
+        this.imageLink = imageLink;
+        this.useAt = true;
+    }
+
+    public MarketItem(Integer categoryCode, Integer code, String name, Integer tier, ItemGrade itemGrade, String imageLink, Boolean useAt) {
+        this.categoryCode = categoryCode;
+        this.code = code;
+        this.name = name;
+        this.tier = tier;
+        this.itemGrade = itemGrade;
         this.imageLink = imageLink;
         this.useAt = useAt;
     }
 
     public void updateMarketItem(MarketItem marketItem) {
+        this.categoryCode = marketItem.getCategoryCode();
         this.code = marketItem.getCode();
         this.name = marketItem.getName();
         this.tier = marketItem.getTier();
-        this.grade = marketItem.getGrade();
+        this.itemGrade = marketItem.getItemGrade();
         this.imageLink = marketItem.getImageLink();
         this.useAt = marketItem.getUseAt();
     }

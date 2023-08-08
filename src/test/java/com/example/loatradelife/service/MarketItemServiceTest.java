@@ -1,6 +1,8 @@
 package com.example.loatradelife.service;
 
+import com.example.loatradelife.domain.ItemGrade;
 import com.example.loatradelife.domain.MarketItem;
+import com.example.loatradelife.repository.ItemGradeRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class MarketItemServiceTest {
     @Autowired
+    private ItemGradeRepository itemGradeRepository;
+    @Autowired
     private MarketItemService marketItemService;
 
     @BeforeEach
@@ -28,13 +32,15 @@ class MarketItemServiceTest {
 
     @Test
     void saveMarketItem() {
+        ItemGrade normal = new ItemGrade(0,"일반");
+        itemGradeRepository.save(normal);
         MarketItem marketItem = new MarketItem(
+                90200,
                 65583,
                 "name",
                 3,
-                2,
-                "link",
-                true
+                normal,
+                "link"
         );
 
         Long id = marketItemService.saveMarketItem(marketItem);
@@ -44,21 +50,25 @@ class MarketItemServiceTest {
 
     @Test
     void updateMarketItem() {
+        ItemGrade normal = new ItemGrade(0,"일반");
+        ItemGrade uncommon = new ItemGrade(1,"고급");
+        itemGradeRepository.save(normal);
+        itemGradeRepository.save(uncommon);
         MarketItem marketItem = new MarketItem(
+                90200,
                 65583,
                 "name",
                 3,
-                2,
-                "link",
-                true
+                normal,
+                "link"
         );
         MarketItem newMarketItem = new MarketItem(
+                90300,
                 74302,
                 "name_new",
                 3,
-                3,
-                "link_new",
-                true
+                uncommon,
+                "link_new"
         );
 
         Long id = marketItemService.saveMarketItem(marketItem);
@@ -67,23 +77,26 @@ class MarketItemServiceTest {
 
         assertThat(oneMarketItem.isEmpty()).isFalse();
         MarketItem get = oneMarketItem.get();
+        assertThat(get.getCategoryCode()).isEqualTo(90300);
         assertThat(get.getCode()).isEqualTo(74302);
         assertThat(get.getName()).isEqualTo("name_new");
         assertThat(get.getTier()).isEqualTo(3);
-        assertThat(get.getGrade()).isEqualTo(3);
+        assertThat(get.getItemGrade()).isEqualTo(uncommon);
         assertThat(get.getImageLink()).isEqualTo("link_new");
         assertThat(get.getUseAt()).isTrue();
     }
 
     @Test
     void changeMarketItemUseAt() {
+        ItemGrade normal = new ItemGrade(0,"일반");
+        itemGradeRepository.save(normal);
         MarketItem marketItem = new MarketItem(
+                90200,
                 65583,
                 "name",
                 3,
-                1,
-                "link",
-                true
+                normal,
+                "link"
         );
 
         Long id = marketItemService.saveMarketItem(marketItem);
