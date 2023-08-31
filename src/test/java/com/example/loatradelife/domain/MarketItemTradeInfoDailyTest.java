@@ -63,7 +63,8 @@ class MarketItemTradeInfoDailyTest {
                 newMarketItem,
                 now.plusDays(1),
                 17.9,
-                1_000_600
+                1_000_600,
+                10
         );
         MarketItemTradeInfoDaily.builder()
                 .marketItem(newMarketItem)

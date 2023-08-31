@@ -23,13 +23,15 @@ public class MarketItemTradeInfoDaily {
     private LocalDateTime date;
     private Double avgPrice;
     private Integer tradeCount;
+    private Integer bundleCount;
 
     @Builder
-    public MarketItemTradeInfoDaily(MarketItem marketItem, LocalDateTime date, Double avgPrice, Integer tradeCount) {
+    public MarketItemTradeInfoDaily(MarketItem marketItem, LocalDateTime date, Double avgPrice, Integer tradeCount, Integer bundleCount) {
         this.marketItem = marketItem;
         this.date = date;
         this.avgPrice = avgPrice;
         this.tradeCount = tradeCount;
+        this.bundleCount = bundleCount;
     }
 
     public void updateMarketItemTradeInfoDaily(MarketItemTradeInfoDaily marketItemTradeInfoDaily) {
@@ -37,5 +39,6 @@ public class MarketItemTradeInfoDaily {
         this.date = marketItemTradeInfoDaily.getDate();
         this.avgPrice = marketItemTradeInfoDaily.getAvgPrice();
         this.tradeCount = marketItemTradeInfoDaily.getTradeCount();
+        this.bundleCount = marketItemTradeInfoDaily.getBundleCount();
     }
 }
