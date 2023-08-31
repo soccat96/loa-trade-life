@@ -22,7 +22,7 @@ public class MarketItem {
     private Boolean useAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "number")
+    @JoinColumn(name = "item_grade_id")
     private ItemGrade itemGrade;
 
     public MarketItem(Integer categoryCode, Integer code, String name, Integer tier, ItemGrade itemGrade, String imageLink) {
