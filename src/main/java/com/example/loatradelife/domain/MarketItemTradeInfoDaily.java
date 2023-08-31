@@ -18,7 +18,7 @@ public class MarketItemTradeInfoDaily {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "code")
+    @JoinColumn(name = "market_item_id")
     private MarketItem marketItem;
     private LocalDateTime date;
     private Double avgPrice;
