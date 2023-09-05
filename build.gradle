@@ -32,6 +32,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.1.4'
+
 }
 
 tasks.named('test') {
