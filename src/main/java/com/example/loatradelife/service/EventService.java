@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,10 @@ public class EventService {
 
     public Optional<Event> findOneEvent(Long id) {
         return eventRepository.findById(id);
+    }
+
+    public List<Event> findListByStartDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return eventRepository.findByStartDateBetweenOrderByStartDate(startDate, endDate);
     }
 
     @Transactional

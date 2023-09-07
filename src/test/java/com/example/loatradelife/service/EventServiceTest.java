@@ -128,4 +128,37 @@ class EventServiceTest {
         Optional<Event> oneEvent = eventService.findOneEvent(id);
         assertThat(oneEvent.isEmpty()).isTrue();
     }
+
+    @Test
+    public void findByStartDateBetween() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime ed = now.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime sd = ed.minusDays(7);
+        Event event1 = new Event("title1","thumbnail1","link1",sd.minusDays(1),ed,ed);
+        Event event2 = new Event("title2","thumbnail2","link2",sd.plusDays(0), ed,ed);
+        Event event3 = new Event("title3","thumbnail3","link3",sd.plusDays(1), ed,ed);
+        Event event4 = new Event("title4","thumbnail4","link4",sd.plusDays(2), ed,ed);
+        Event event5 = new Event("title5","thumbnail5","link5",sd.plusDays(3), ed,ed);
+        Event event6 = new Event("title6","thumbnail6","link6",sd.plusDays(4), ed,ed);
+        Event event7 = new Event("title7","thumbnail7","link7",sd.plusDays(5), ed,ed);
+        Event event8 = new Event("title8","thumbnail8","link8",sd.plusDays(6), ed,ed);
+        Event event9 = new Event("title9","thumbnail9","link7",sd.plusDays(7), ed,ed);
+        eventService.saveEvent(event1);
+        eventService.saveEvent(event2);
+        eventService.saveEvent(event3);
+        eventService.saveEvent(event4);
+        eventService.saveEvent(event5);
+        eventService.saveEvent(event6);
+        eventService.saveEvent(event7);
+        eventService.saveEvent(event8);
+        eventService.saveEvent(event9);
+
+        List<Event> list = eventService.findListByStartDateBetween(sd, ed);
+
+        assertThat(list.size()).isEqualTo(8);
+        Event eventFirst = list.get(0);
+        Event eventLast = list.get(list.size() - 1);
+        assertThat(eventFirst.getTitle()).isEqualTo("title2");
+        assertThat(eventLast.getTitle()).isEqualTo("title9");
+    }
 }
