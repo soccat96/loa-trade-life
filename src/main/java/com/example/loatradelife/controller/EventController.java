@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -27,27 +25,10 @@ public class EventController {
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate
     ) {
-        LocalDateTime sd = LocalDateTime.of(
-                LocalDate.now().minusDays(7),
-                LocalTime.of(0, 0, 0)
-        );
-        LocalDateTime ed = LocalDateTime.of(
-                LocalDate.now(),
-                LocalTime.of(23, 59, 59)
-        );
-        if (startDate != null && !startDate.isEmpty()) {
-            sd = LocalDateTime.of(
-                    LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE),
-                    LocalTime.of(0, 0, 0)
-            );
-            ed = LocalDateTime.of(
-                    LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE),
-                    LocalTime.of(23, 59, 59)
-            );
-        }
+        Map<String, LocalDateTime> mapSdEd = StartDateEndDateMaker.getStartDateEndDate(startDate, endDate);
 
         ArrayList<EventDto> eventDtoList = new ArrayList<>();
-        List<Event> eventList = eventService.findListByStartDateBetween(sd, ed);
+        List<Event> eventList = eventService.findListByStartDateBetween(mapSdEd.get("sd"), mapSdEd.get("ed"));
         for (Event x : eventList) {
             eventDtoList.add(new EventDto(x));
         }
