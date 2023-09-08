@@ -81,10 +81,4 @@ public class NoticeController {
             this.type = notice.getType();
         }
     }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
-    }
 }

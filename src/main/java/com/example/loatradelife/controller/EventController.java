@@ -83,10 +83,4 @@ public class EventController {
             this.rewardDate = event.getRewardDate();
         }
     }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
-    }
 }
