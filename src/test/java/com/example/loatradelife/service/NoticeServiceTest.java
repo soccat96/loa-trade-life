@@ -115,4 +115,51 @@ class NoticeServiceTest {
         Optional<Notice> oneNotice = noticeService.findOneNotice(id);
         assertThat(oneNotice.isEmpty()).isTrue();
     }
+
+    @Test
+    public void findByDateBetween() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime ed = now.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime sd = ed.minusDays(10);
+        Notice notice00 = new Notice("title00", sd.minusDays(1), "link0", NoticeType.NOTICE);
+        Notice notice01 = new Notice("title01", sd.minusDays(0), "link0", NoticeType.NOTICE);
+        Notice notice02 = new Notice("title02", sd.plusDays(1), "link0", NoticeType.NOTICE);
+        Notice notice03 = new Notice("title03", sd.plusDays(2), "link0", NoticeType.NOTICE);
+        Notice notice04 = new Notice("title04", sd.plusDays(3), "link0", NoticeType.NOTICE);
+        Notice notice05 = new Notice("title05", sd.plusDays(4), "link0", NoticeType.NOTICE);
+        Notice notice06 = new Notice("title06", sd.plusDays(5), "link0", NoticeType.NOTICE);
+        Notice notice07 = new Notice("title07", sd.plusDays(6), "link0", NoticeType.NOTICE);
+        Notice notice08 = new Notice("title08", sd.plusDays(7), "link0", NoticeType.NOTICE);
+        Notice notice09 = new Notice("title09", sd.plusDays(8), "link0", NoticeType.NOTICE);
+        Notice notice10 = new Notice("title10", sd.plusDays(9), "link0", NoticeType.NOTICE);
+        Notice notice11 = new Notice("title11", sd.plusDays(10), "link0", NoticeType.NOTICE);
+        Notice notice12 = new Notice("title12", sd.plusDays(11), "link0", NoticeType.NOTICE);
+        Notice notice13 = new Notice("title13", sd.plusDays(12), "link0", NoticeType.NOTICE);
+        Notice notice14 = new Notice("title14", sd.plusDays(13), "link0", NoticeType.NOTICE);
+        noticeService.saveNotice(notice00);
+        noticeService.saveNotice(notice01);
+        noticeService.saveNotice(notice02);
+        noticeService.saveNotice(notice03);
+        noticeService.saveNotice(notice04);
+        noticeService.saveNotice(notice05);
+        noticeService.saveNotice(notice06);
+        noticeService.saveNotice(notice07);
+        noticeService.saveNotice(notice08);
+        noticeService.saveNotice(notice09);
+        noticeService.saveNotice(notice10);
+        noticeService.saveNotice(notice11);
+        noticeService.saveNotice(notice12);
+        noticeService.saveNotice(notice13);
+        noticeService.saveNotice(notice14);
+
+        List<Notice> noticeList = noticeService.findListByDateBetween(sd, ed);
+
+        assertThat(noticeList.size()).isEqualTo(11);
+        Notice noticeFirst = noticeList.get(0);
+        Notice noticeLast = noticeList.get(noticeList.size() - 1);
+        assertThat(noticeFirst.getTitle()).isEqualTo("title01");
+        assertThat(noticeFirst.getDate().isEqual(sd)).isTrue();
+        assertThat(noticeLast.getTitle()).isEqualTo("title11");
+        assertThat(noticeLast.getDate().isEqual(ed)).isTrue();
+    }
 }
