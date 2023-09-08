@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/v1/events")
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
 
-    @GetMapping("/")
+    @GetMapping
     public Result<List<EventDto>> getEvents(
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate
