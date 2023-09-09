@@ -5,7 +5,9 @@ import com.example.loatradelife.domain.MarketItemTradeInfoDaily;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface MarketItemTradeInfoDailyRepository extends JpaRepository<MarketItemTradeInfoDaily, Long> {
     boolean existsMarketItemTradeInfoDailyByMarketItemAndDate(MarketItem marketItem, LocalDateTime date);
+    List<MarketItemTradeInfoDaily> findByDateBetweenOrderByDate(LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -191,5 +192,51 @@ class MarketItemTradeInfoDailyServiceTest {
         ItemGrade ig = entityManager.find(ItemGrade.class, normal.getId());
         assertThat(mi).isNotNull();
         assertThat(ig).isNotNull();
+    }
+
+    @Test
+    public void findListByDateBetween() {
+        ItemGrade itemGrade = new ItemGrade(0,"일반");
+        MarketItem marketItem = new MarketItem(
+                90200,
+                68448,
+                "name",
+                3,
+                itemGrade,
+                "link"
+        );
+        entityManager.persist(itemGrade);
+        entityManager.persist(marketItem);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime ed = now.withHour(23).withMinute(59).withSecond(59).withNano(0);
+        LocalDateTime sd = ed.minusDays(5);
+        MarketItemTradeInfoDaily data0 = new MarketItemTradeInfoDaily(marketItem, sd.minusDays(2), 10.0, 100, 10);
+        MarketItemTradeInfoDaily data1 = new MarketItemTradeInfoDaily(marketItem, sd.minusDays(1), 10.1, 101, 10);
+        MarketItemTradeInfoDaily data2 = new MarketItemTradeInfoDaily(marketItem, sd.minusDays(0), 10.2, 102, 10);
+        MarketItemTradeInfoDaily data3 = new MarketItemTradeInfoDaily(marketItem, ed.minusDays(4), 10.3, 103, 10);
+        MarketItemTradeInfoDaily data4 = new MarketItemTradeInfoDaily(marketItem, ed.minusDays(3), 10.4, 104, 10);
+        MarketItemTradeInfoDaily data5 = new MarketItemTradeInfoDaily(marketItem, ed.minusDays(2), 10.5, 105, 10);
+        MarketItemTradeInfoDaily data6 = new MarketItemTradeInfoDaily(marketItem, ed.minusDays(1), 10.6, 106, 10);
+        MarketItemTradeInfoDaily data7 = new MarketItemTradeInfoDaily(marketItem, ed.minusDays(0), 10.7, 107, 10);
+        MarketItemTradeInfoDaily data8 = new MarketItemTradeInfoDaily(marketItem, ed.plusDays(1),  10.8, 108, 10);
+        MarketItemTradeInfoDaily data9 = new MarketItemTradeInfoDaily(marketItem, ed.plusDays(2),  10.9, 109, 10);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data0);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data1);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data2);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data3);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data4);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data5);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data6);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data7);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data8);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data9);
+
+        List<MarketItemTradeInfoDaily> list = marketItemTradeInfoDailyService.findListByDateBetween(sd, ed);
+
+        assertThat(list.size()).isEqualTo(6);
+        MarketItemTradeInfoDaily dataFirst = list.get(0);
+        MarketItemTradeInfoDaily dataLast = list.get(list.size() - 1);
+        assertThat(dataFirst.getAvgPrice()).isEqualTo(10.2);
+        assertThat(dataLast.getAvgPrice()).isEqualTo(10.7);
     }
 }
