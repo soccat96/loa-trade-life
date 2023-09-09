@@ -239,4 +239,63 @@ class MarketItemTradeInfoDailyServiceTest {
         assertThat(dataFirst.getAvgPrice()).isEqualTo(10.2);
         assertThat(dataLast.getAvgPrice()).isEqualTo(10.7);
     }
+
+    @Test
+    public void findListByMarketItem() {
+        ItemGrade itemGrade = new ItemGrade(0,"일반");
+        MarketItem marketItem1 = new MarketItem(
+                90200,
+                68448,
+                "name1",
+                3,
+                itemGrade,
+                "link1"
+        );
+        MarketItem marketItem2 = new MarketItem(
+                90300,
+                78448,
+                "name2",
+                3,
+                itemGrade,
+                "link2"
+        );
+        entityManager.persist(itemGrade);
+        entityManager.persist(marketItem1);
+        entityManager.persist(marketItem2);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime ed = now.withHour(23).withMinute(59).withSecond(59).withNano(0);
+        LocalDateTime sd = ed.minusDays(5);
+        MarketItemTradeInfoDaily data0 = new MarketItemTradeInfoDaily(marketItem1, sd.minusDays(2), 10.0, 100, 10);
+        MarketItemTradeInfoDaily data1 = new MarketItemTradeInfoDaily(marketItem1, sd.minusDays(1), 10.1, 101, 10);
+        MarketItemTradeInfoDaily data2 = new MarketItemTradeInfoDaily(marketItem1, sd.minusDays(0), 10.2, 102, 10);
+        MarketItemTradeInfoDaily data3 = new MarketItemTradeInfoDaily(marketItem1, ed.minusDays(4), 10.3, 103, 10);
+        MarketItemTradeInfoDaily data4 = new MarketItemTradeInfoDaily(marketItem1, ed.minusDays(3), 10.4, 104, 10);
+        MarketItemTradeInfoDaily data5 = new MarketItemTradeInfoDaily(marketItem2, ed.minusDays(2), 10.5, 105, 10);
+        MarketItemTradeInfoDaily data6 = new MarketItemTradeInfoDaily(marketItem2, ed.minusDays(1), 10.6, 106, 10);
+        MarketItemTradeInfoDaily data7 = new MarketItemTradeInfoDaily(marketItem2, ed.minusDays(0), 10.7, 107, 10);
+        MarketItemTradeInfoDaily data8 = new MarketItemTradeInfoDaily(marketItem2, ed.plusDays(1),  10.8, 108, 10);
+        MarketItemTradeInfoDaily data9 = new MarketItemTradeInfoDaily(marketItem2, ed.plusDays(2),  10.9, 109, 10);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data0);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data1);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data2);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data3);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data4);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data5);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data6);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data7);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data8);
+        marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data9);
+
+        List<MarketItemTradeInfoDaily> dataList = marketItemTradeInfoDailyService.findListByMarketItemAndDateBetween(marketItem1, sd, ed);
+
+        assertThat(dataList.size()).isEqualTo(3);
+        MarketItem miFirst = dataList.get(0).getMarketItem();
+        MarketItem miLast = dataList.get(dataList.size() - 1).getMarketItem();
+        assertThat(miFirst.getId()).isEqualTo(1);
+        assertThat(miFirst.getCategoryCode()).isEqualTo(90200);
+        assertThat(miFirst.getName()).isEqualTo("name1");
+        assertThat(miLast.getId()).isEqualTo(1);
+        assertThat(miLast.getCategoryCode()).isEqualTo(90200);
+        assertThat(miLast.getName()).isEqualTo("name1");
+    }
 }

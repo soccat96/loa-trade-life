@@ -1,5 +1,6 @@
 package com.example.loatradelife.service;
 
+import com.example.loatradelife.domain.MarketItem;
 import com.example.loatradelife.domain.MarketItemTradeInfoDaily;
 import com.example.loatradelife.repository.MarketItemTradeInfoDailyRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,10 @@ public class MarketItemTradeInfoDailyService {
 
     public List<MarketItemTradeInfoDaily> findListByDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return marketItemTradeInfoDailyRepository.findByDateBetweenOrderByDate(startDate, endDate);
+    }
+
+    public List<MarketItemTradeInfoDaily> findListByMarketItemAndDateBetween(MarketItem marketItem, LocalDateTime startDate, LocalDateTime endDate) {
+        return marketItemTradeInfoDailyRepository.findByMarketItemAndDateBetweenOrderByDate(marketItem, startDate, endDate);
     }
 
     @Transactional

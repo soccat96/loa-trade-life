@@ -10,4 +10,5 @@ import java.util.List;
 public interface MarketItemTradeInfoDailyRepository extends JpaRepository<MarketItemTradeInfoDaily, Long> {
     boolean existsMarketItemTradeInfoDailyByMarketItemAndDate(MarketItem marketItem, LocalDateTime date);
     List<MarketItemTradeInfoDaily> findByDateBetweenOrderByDate(LocalDateTime startDate, LocalDateTime endDate);
+    List<MarketItemTradeInfoDaily> findByMarketItemAndDateBetweenOrderByDate(MarketItem marketItem, LocalDateTime startDate, LocalDateTime endDate);
 }
