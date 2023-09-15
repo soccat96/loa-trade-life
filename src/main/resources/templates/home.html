@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <title>Loa trade life</title>
+
+    <link rel="stylesheet" href="/lib/bootstrap-5.3.1-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/lib/bootstrap-datepicker-1.9.0-dist/css/bootstrap-datepicker3.standalone.min.css" />
+    <link rel="stylesheet" href="/css/home.css" />
+</head>
+<body>
+<div class="container">
+    <header th:replace="/fragments/header.html" th:remove="tag"></header>
+
+    <div class="row">
+        <div class="col-3">
+            <label for="category-select">생활 재료 종류</label>
+            <select id="category-select" class="form-select">
+                <option value="90200">식물채집</option>
+                <option value="90300">벌목</option>
+                <option value="90400">채광</option>
+                <option value="90500">수렵</option>
+                <option value="90600">낚시</option>
+                <option value="90700">고고학</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="item-select">생활 재료</label>
+            <select id="item-select" class="form-select"></select>
+        </div>
+        <div class="col-4">
+            <label for="date-picker-div">날짜 선택</label>
+            <div id="date-picker-div" class="input-group input-daterange">
+                <input type="text" name="start" class="form-control" value="" readonly="readonly" />
+                <div class="input-group-addon">~</div>
+                <input type="text" name="end" class="form-control" value="" readonly="readonly" />
+            </div>
+        </div>
+        <div class="col-2 d-grid">
+            <label for="search-button">&emsp;</label>
+            <button type="button" id="search-button" class="btn btn-primary">조회</button>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 d-grid">
+            <h4>그래프</h4>
+            <canvas id="daily-data-canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-8">
+            <div class="row">
+                <div class="col-12">
+                    <h4>공지사항</h4>
+                    <p><span>&emsp;</span></p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="notice-div" class="col-12">
+                    <table class="table table-striped-columns table-responsive">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>날짜</th>
+                            <th>제목</th>
+                            <th>링크</th>
+                        </tr>
+                        </thead>
+                        <tbody id="notice-tbody" class="table-group-divider"></tbody>
+                        <tfoot class="table-group-divider">
+                        <tr>
+                            <th>#</th>
+                            <th>날짜</th>
+                            <th>제목</th>
+                            <th>링크</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-12">
+                    <h4>거래정보</h4>
+                    <p id="bundle-count-p">거래 단위: <span id="bundle-count-span"></span></p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="daily-data-div" class="col-12">
+                    <table class="table table-striped-columns table-responsive">
+                        <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>가격</th>
+                            <th>거래량</th>
+                        </tr>
+                        </thead>
+                        <tbody id="daily-data-tbody" class="table-group-divider"></tbody>
+                        <tfoot class="table-group-divider">
+                        <tr>
+                            <th>날짜</th>
+                            <th>가격</th>
+                            <th>거래량</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-3 my-4">
+        <p class="text-center text-body-secondary">&copy; 2023 soccat96</p>
+    </footer>
+
+    <div th:replace="/fragments/lib.html" th:remove="tag"></div>ß
+</div>
+</body>
+</html>
