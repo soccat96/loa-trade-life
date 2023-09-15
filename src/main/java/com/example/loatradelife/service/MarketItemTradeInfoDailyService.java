@@ -21,10 +21,15 @@ public class MarketItemTradeInfoDailyService {
     public Long saveMarketItemTradeInfoDaily(MarketItemTradeInfoDaily marketItemTradeInfoDaily) {
         long id = -1;
 
-        if (!marketItemTradeInfoDailyRepository.existsMarketItemTradeInfoDailyByMarketItemAndDate(
+        Optional<MarketItemTradeInfoDaily> findOne = marketItemTradeInfoDailyRepository.findByMarketItemAndDate(
                 marketItemTradeInfoDaily.getMarketItem(),
-                marketItemTradeInfoDaily.getDate())
-        ) {
+                marketItemTradeInfoDaily.getDate()
+        );
+        if (findOne.isPresent()) {
+            MarketItemTradeInfoDaily existOne = findOne.get();
+            existOne.updateMarketItemTradeInfoDaily(marketItemTradeInfoDaily);
+            id = existOne.getId();
+        } else {
             id = marketItemTradeInfoDailyRepository.save(marketItemTradeInfoDaily).getId();
         }
 
