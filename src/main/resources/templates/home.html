@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="container">
-    <header th:replace="/fragments/header.html" th:remove="tag"></header>
+    <header th:replace="~{fragments/header.html}" th:remove="tag"></header>
 
     <div class="row">
         <div class="col-3">
@@ -118,7 +118,7 @@
         <p class="text-center text-body-secondary">&copy; 2023 soccat96</p>
     </footer>
 
-    <div th:replace="/fragments/lib.html" th:remove="tag"></div>ß
+    <div th:replace="~{fragments/lib.html}" th:remove="tag"></div>
 </div>
 </body>
 </html>
