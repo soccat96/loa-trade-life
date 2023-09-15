@@ -1,11 +1,8 @@
 package com.example.loatradelife.controller;
 
+import com.example.loatradelife.controller.dto.NoticeDto;
 import com.example.loatradelife.domain.Notice;
-import com.example.loatradelife.domain.NoticeType;
 import com.example.loatradelife.service.NoticeService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,25 +38,5 @@ public class NoticeController {
     public Result<NoticeDto> getNotice(@PathVariable(name = "noticeId") String noticeId) {
         Optional<Notice> oneNotice = noticeService.findOneNotice(Long.parseLong(noticeId));
         return oneNotice.map(notice -> new Result<>(new NoticeDto(notice))).orElseGet(() -> new Result<>(new NoticeDto()));
-
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    static class NoticeDto {
-        private Long id;
-        private String title;
-        private LocalDateTime date;
-        private String link;
-        private NoticeType type;
-
-        public NoticeDto(Notice notice) {
-            this.id = notice.getId();
-            this.title = notice.getTitle();
-            this.date = notice.getDate();
-            this.link = notice.getLink();
-            this.type = notice.getType();
-        }
     }
 }
