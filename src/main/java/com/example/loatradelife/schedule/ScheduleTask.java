@@ -38,7 +38,7 @@ public class ScheduleTask {
     }
 
     private void loggingEnd(String methodName, int addedEventCount) {
-        log.info("added event count::==" + addedEventCount);
+        log.info("added count::==" + addedEventCount);
         log.info("end " + methodName + "::==" + LocalDateTime.now());
     }
 
@@ -69,58 +69,7 @@ public class ScheduleTask {
     }
 
     // second minute hour date month dayOfWeek
-    @Scheduled(cron = "0 */1 * * * *")
-    public void getEvents() {
-        loggingStart("getEvents()");
-
-        int addedEventCount = 0;
-        List<Map<String, Object>> mapList = getMapList(getHttpURLConnection("/news/events"));
-        for (Map<String, Object> m : mapList) {
-            Event event = new Event(
-                    (String) m.get("Title"),
-                    (String) m.get("Thumbnail"),
-                    (String) m.get("Link"),
-                    LocalDateTime.parse((String )m.get("StartDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                    LocalDateTime.parse((String) m.get("EndDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                    m.get("RewardDate") == null
-                            ? null
-                            : LocalDateTime.parse((String) m.get("RewardDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            );
-
-            Long result = eventService.saveEvent(event);
-            if (result > 0) {
-                addedEventCount++;
-            }
-        }
-
-        loggingEnd("getEvents()", addedEventCount);
-    }
-
-    // second minute hour date month dayOfWeek
-    @Scheduled(cron = "0 */1 * * * *")
-    public void getNotices() {
-        loggingStart("getNotices()");
-
-        int addedNoticeCount = 0;
-        List<Map<String, Object>> mapList = getMapList(getHttpURLConnection("/news/notices"));
-        for (Map<String, Object> x : mapList) {
-            Notice notice = new Notice(
-                    (String) x.get("Title"),
-                    LocalDateTime.parse((String) x.get("Date"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                    (String) x.get("Link"),
-                    NoticeType.getNoticeType((String) x.get("Type"))
-            );
-
-            Long result = noticeService.saveNotice(notice);
-            if (result > 0) {
-                addedNoticeCount++;
-            }
-        }
-
-        loggingEnd("getNotices()", addedNoticeCount);
-    }
-
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void getMarketItemTradeInfoDailies() {
         loggingStart("getMarketItemTradeInfoDailies()");
 
@@ -153,5 +102,56 @@ public class ScheduleTask {
         }
 
         loggingEnd("getMarketItemTradeInfoDailies()", addedCount);
+    }
+
+    @Scheduled(cron = "0 0,30 * * * *")
+    public void getEvents() {
+        loggingStart("getEvents()");
+
+        int addedEventCount = 0;
+        List<Map<String, Object>> mapList = getMapList(getHttpURLConnection("/news/events"));
+        for (Map<String, Object> m : mapList) {
+            Event event = new Event(
+                    (String) m.get("Title"),
+                    (String) m.get("Thumbnail"),
+                    (String) m.get("Link"),
+                    LocalDateTime.parse((String )m.get("StartDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                    LocalDateTime.parse((String) m.get("EndDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                    m.get("RewardDate") == null
+                            ? null
+                            : LocalDateTime.parse((String) m.get("RewardDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            );
+
+            Long result = eventService.saveEvent(event);
+            if (result > 0) {
+                addedEventCount++;
+            }
+        }
+
+        loggingEnd("getEvents()", addedEventCount);
+    }
+
+    // second minute hour date month dayOfWeek
+    @Scheduled(cron = "0 */10 * * * *")
+    public void getNotices() {
+        loggingStart("getNotices()");
+
+        int addedNoticeCount = 0;
+        List<Map<String, Object>> mapList = getMapList(getHttpURLConnection("/news/notices"));
+        for (Map<String, Object> x : mapList) {
+            Notice notice = new Notice(
+                    (String) x.get("Title"),
+                    LocalDateTime.parse((String) x.get("Date"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                    (String) x.get("Link"),
+                    NoticeType.getNoticeType((String) x.get("Type"))
+            );
+
+            Long result = noticeService.saveNotice(notice);
+            if (result > 0) {
+                addedNoticeCount++;
+            }
+        }
+
+        loggingEnd("getNotices()", addedNoticeCount);
     }
 }
