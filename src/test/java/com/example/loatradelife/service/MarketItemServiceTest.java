@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,5 +106,42 @@ class MarketItemServiceTest {
 
         assertThat(oneMarketItem.isEmpty()).isFalse();
         assertThat(oneMarketItem.get().getUseAt()).isFalse();
+    }
+
+    @Test
+    public void getMarketItemByCategoryCode() {
+        ItemGrade normal = new ItemGrade(0,"일반");
+        itemGradeRepository.save(normal);
+        MarketItem marketItem0 = new MarketItem(
+                90200,
+                60000,
+                "name0",
+                3,
+                normal,
+                "link0"
+        );
+        MarketItem marketItem1 = new MarketItem(
+                90200,
+                60001,
+                "name1",
+                3,
+                normal,
+                "link1"
+        );
+        MarketItem marketItem2 = new MarketItem(
+                90300,
+                60002,
+                "name3",
+                3,
+                normal,
+                "link3"
+        );
+        marketItemService.saveMarketItem(marketItem0);
+        marketItemService.saveMarketItem(marketItem1);
+        marketItemService.saveMarketItem(marketItem2);
+
+        List<MarketItem> list = marketItemService.findListMarketItemByCategoryCode(90200);
+
+        assertThat(list.size()).isEqualTo(2);
     }
 }

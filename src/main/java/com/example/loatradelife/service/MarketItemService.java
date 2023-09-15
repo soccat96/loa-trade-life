@@ -28,6 +28,10 @@ public class MarketItemService {
         return marketItemRepository.findById(id);
     }
 
+    public List<MarketItem> findListMarketItemByCategoryCode(int categoryCode) {
+        return marketItemRepository.findMarketItemsByCategoryCode(categoryCode);
+    }
+
     @Transactional
     public void updateMarketItem(long id, MarketItem marketItem) {
         Optional<MarketItem> market = marketItemRepository.findById(id);
