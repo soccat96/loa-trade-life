@@ -59,20 +59,31 @@ class EventServiceTest {
 
     @Test
     public void duplicatedSaveEvent() {
+        LocalDateTime now = LocalDateTime.now();
         Event event = new Event(
                 "title_duplicate",
                 "thumbnail",
                 "link",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                now,
+                now,
+                now
+        );
+        Event event1 = new Event(
+                "title_duplicate",
+                "thumbnail",
+                "link",
+                now.plusDays(1),
+                now.plusDays(1),
+                now.plusDays(1)
         );
 
         Long id1 = eventService.saveEvent(event);
         Long id2 = eventService.saveEvent(event);
+        Long id3 = eventService.saveEvent(event1);
 
         assertThat(id1).isEqualTo(1);
         assertThat(id2).isEqualTo(-1);
+        assertThat(id3).isEqualTo(2);
     }
 
     @Test

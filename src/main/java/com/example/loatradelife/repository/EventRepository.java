@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-    boolean existsEventByTitle(String title);
-
+    boolean existsEventByTitleAndStartDate(String title, LocalDateTime startDate);
     List<Event> findByStartDateBetweenOrderByStartDate(LocalDateTime startDate, LocalDateTime endDate);
 }

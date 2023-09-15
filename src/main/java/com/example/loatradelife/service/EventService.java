@@ -20,7 +20,7 @@ public class EventService {
     public Long saveEvent(Event event) {
         long id = -1;
 
-        if (!eventRepository.existsEventByTitle(event.getTitle())) {
+        if (!eventRepository.existsEventByTitleAndStartDate(event.getTitle(), event.getStartDate())) {
             id = eventRepository.save(event).getId();
         }
 

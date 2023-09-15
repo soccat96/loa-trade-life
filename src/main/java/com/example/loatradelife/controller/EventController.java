@@ -1,10 +1,8 @@
 package com.example.loatradelife.controller;
 
+import com.example.loatradelife.controller.dto.EventDto;
 import com.example.loatradelife.domain.Event;
 import com.example.loatradelife.service.EventService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,28 +38,5 @@ public class EventController {
     public Result<EventDto> getEvent(@PathVariable(name = "eventId") String eventId) {
         Optional<Event> oneEvent = eventService.findOneEvent(Long.parseLong(eventId));
         return oneEvent.map(event -> new Result<>(new EventDto(event))).orElseGet(() -> new Result<>(new EventDto()));
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    static class EventDto {
-        private Long id;
-        private String title;
-        private String thumbnail;
-        private String link;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-        private LocalDateTime rewardDate;
-
-        public EventDto(Event event) {
-            this.id = event.getId();
-            this.title = event.getTitle();
-            this.thumbnail = event.getThumbnail();
-            this.link = event.getLink();
-            this.startDate = event.getStartDate();
-            this.endDate = event.getEndDate();
-            this.rewardDate = event.getRewardDate();
-        }
     }
 }
