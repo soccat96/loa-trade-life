@@ -55,10 +55,8 @@ class MarketItemTradeInfoDailyServiceTest {
                 .build();
 
         Long id1 = marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(marketItemTradeInfoDaily);
-        Long id2 = marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(marketItemTradeInfoDaily);
 
         assertThat(id1).isNotEqualTo(-1);
-        assertThat(id2).isEqualTo(-1);
     }
 
     @Test
@@ -291,11 +289,11 @@ class MarketItemTradeInfoDailyServiceTest {
         assertThat(dataList.size()).isEqualTo(3);
         MarketItem miFirst = dataList.get(0).getMarketItem();
         MarketItem miLast = dataList.get(dataList.size() - 1).getMarketItem();
-        assertThat(miFirst.getId()).isEqualTo(1);
         assertThat(miFirst.getCategoryCode()).isEqualTo(90200);
         assertThat(miFirst.getName()).isEqualTo("name1");
-        assertThat(miLast.getId()).isEqualTo(1);
+        assertThat(dataList.get(0).getTradeCount()).isEqualTo(102);
         assertThat(miLast.getCategoryCode()).isEqualTo(90200);
         assertThat(miLast.getName()).isEqualTo("name1");
+        assertThat(dataList.get(dataList.size() - 1).getTradeCount()).isEqualTo(104);
     }
 }

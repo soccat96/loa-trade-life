@@ -1,6 +1,7 @@
 package com.example.loatradelife.service;
 
 import com.example.loatradelife.domain.Event;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,9 +82,9 @@ class EventServiceTest {
         Long id2 = eventService.saveEvent(event);
         Long id3 = eventService.saveEvent(event1);
 
-        assertThat(id1).isEqualTo(1);
+        assertThat(id1).isNotEqualTo(-1);
         assertThat(id2).isEqualTo(-1);
-        assertThat(id3).isEqualTo(2);
+        assertThat(id3).isEqualTo(id1 + 1);
     }
 
     @Test
