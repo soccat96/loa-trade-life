@@ -285,5 +285,6 @@ http://ec2-3-37-14-93.ap-northeast-2.compute.amazonaws.com/
 - Event 도메인 제거(생활재료의 생산과 소비에 영향을 거의 주지 않을 것으로 보임)
 - front-end framework 활용(아마도 Vue.js)
 - Kotlin 코드 추가 혹은 교체(프로젝트를 통째로 교체 할까?)
+- 배포 자동화
 - 도메인 구매
 - Spring Security 적용
