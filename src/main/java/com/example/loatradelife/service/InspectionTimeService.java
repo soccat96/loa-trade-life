@@ -17,11 +17,7 @@ public class InspectionTimeService {
 
     @Transactional
     public long createInspectionTime(InspectionTime inspectionTime) {
-        long id = -1;
-
-        id = inspectionTimeRepository.save(inspectionTime).getId();
-
-        return id;
+        return inspectionTimeRepository.save(inspectionTime).getId();
     }
 
     public List<InspectionTime> selectAllInspectionTime() {

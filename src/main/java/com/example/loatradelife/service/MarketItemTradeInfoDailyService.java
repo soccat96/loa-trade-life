@@ -19,7 +19,7 @@ public class MarketItemTradeInfoDailyService {
 
     @Transactional
     public Long saveMarketItemTradeInfoDaily(MarketItemTradeInfoDaily marketItemTradeInfoDaily) {
-        long id = -1;
+        long id;
 
         Optional<MarketItemTradeInfoDaily> findOne = marketItemTradeInfoDailyRepository.findByMarketItemAndDate(
                 marketItemTradeInfoDaily.getMarketItem(),
