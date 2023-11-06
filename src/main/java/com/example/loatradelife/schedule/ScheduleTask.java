@@ -1,6 +1,6 @@
 package com.example.loatradelife.schedule;
 
-import com.example.loatradelife.config.LostArkOpenApiConfig;
+import com.example.loatradelife.connection.ConnectionUtil;
 import com.example.loatradelife.domain.*;
 import com.example.loatradelife.service.EventService;
 import com.example.loatradelife.service.MarketItemService;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,7 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleTask {
-    private final LostArkOpenApiConfig lostArkOpenApiConfig;
+    private final ConnectionUtil connectionUtil;
     private final EventService eventService;
     private final NoticeService noticeService;
     private final MarketItemService marketItemService;
@@ -40,22 +39,6 @@ public class ScheduleTask {
     private void loggingEnd(String methodName, int addedEventCount) {
         log.info("added count::==" + addedEventCount);
         log.info("end " + methodName + "::==" + LocalDateTime.now());
-    }
-
-    private HttpURLConnection getHttpURLConnection(String url) {
-        HttpURLConnection connection;
-        try {
-            connection = (HttpURLConnection) new URL(lostArkOpenApiConfig.getBaseUrl() + url).openConnection();
-            connection.setRequestProperty("authorization", "bearer " + lostArkOpenApiConfig.getKey());
-            connection.setRequestProperty("accept", "application/json");
-            connection.setRequestMethod("GET");
-            connection.connect();
-
-            return connection;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-            // connection exception
-        }
     }
 
     private List<Map<String, Object>> getMapList(HttpURLConnection connection) {
@@ -76,7 +59,7 @@ public class ScheduleTask {
         int addedCount = 0;
         List<MarketItem> marketItemList = marketItemService.findAllMarketItem();
         for (MarketItem marketItem : marketItemList) {
-            List<Map<String, Object>> mapList = getMapList(getHttpURLConnection("/markets/items/" + marketItem.getCode()));
+            List<Map<String, Object>> mapList = getMapList(connectionUtil.getApiHttpURLConnection("/markets/items/" + marketItem.getCode()));
             Map<String, Object> obj = mapList.get(0);
             Integer bundleCount = (Integer) obj.get("BundleCount");
             List<Map<String, Object>> dataList = (List<Map<String,Object>>) obj.get("Stats");
@@ -109,7 +92,7 @@ public class ScheduleTask {
         loggingStart("getEvents()");
 
         int addedEventCount = 0;
-        List<Map<String, Object>> mapList = getMapList(getHttpURLConnection("/news/events"));
+        List<Map<String, Object>> mapList = getMapList(connectionUtil.getApiHttpURLConnection("/news/events"));
         for (Map<String, Object> m : mapList) {
             Event event = new Event(
                     (String) m.get("Title"),
@@ -137,7 +120,7 @@ public class ScheduleTask {
         loggingStart("getNotices()");
 
         int addedNoticeCount = 0;
-        List<Map<String, Object>> mapList = getMapList(getHttpURLConnection("/news/notices"));
+        List<Map<String, Object>> mapList = getMapList(connectionUtil.getApiHttpURLConnection("/news/notices"));
         for (Map<String, Object> x : mapList) {
             Notice notice = new Notice(
                     (String) x.get("Title"),
