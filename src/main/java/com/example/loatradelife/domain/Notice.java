@@ -23,6 +23,10 @@ public class Notice {
     @Enumerated(EnumType.STRING)
     private NoticeType type;
 
+    @OneToOne
+    @JoinColumn(name = "inspection_time_id")
+    private InspectionTime inspectionTime;
+
     public Notice(String title, LocalDateTime date, String link, NoticeType type) {
         this.title = title;
         this.date = date;
