@@ -2,14 +2,12 @@ package com.example.loatradelife.schedule;
 
 import com.example.loatradelife.connection.ConnectionUtil;
 import com.example.loatradelife.domain.*;
-import com.example.loatradelife.service.EventService;
-import com.example.loatradelife.service.MarketItemService;
-import com.example.loatradelife.service.MarketItemTradeInfoDailyService;
-import com.example.loatradelife.service.NoticeService;
+import com.example.loatradelife.service.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +19,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +28,7 @@ public class ScheduleTask {
     private final ConnectionUtil connectionUtil;
     private final EventService eventService;
     private final NoticeService noticeService;
+    private final InspectionTimeService inspectionTimeService;
     private final MarketItemService marketItemService;
     private final MarketItemTradeInfoDailyService marketItemTradeInfoDailyService;
 
@@ -39,6 +39,12 @@ public class ScheduleTask {
     private void loggingEnd(String methodName, int addedEventCount) {
         log.info("added count::==" + addedEventCount);
         log.info("end " + methodName + "::==" + LocalDateTime.now());
+    }
+
+    private boolean checkInspectionTime() {
+        LocalDateTime now = LocalDateTime.now();
+        Optional<InspectionTime> inspectionTime = inspectionTimeService.selectOneRecentInspectionTime();
+        return inspectionTime.map(time -> time.isBetween(now)).orElse(false);
     }
 
     private List<Map<String, Object>> getMapList(HttpURLConnection connection) {
@@ -52,8 +58,13 @@ public class ScheduleTask {
     }
 
     // second minute hour date month dayOfWeek
+    @SuppressWarnings("unchecked")
     @Scheduled(cron = "0 */5 * * * *")
     public void getMarketItemTradeInfoDailies() {
+        if (checkInspectionTime()) {
+            return ;
+        }
+
         loggingStart("getMarketItemTradeInfoDailies()");
 
         int addedCount = 0;
@@ -89,6 +100,10 @@ public class ScheduleTask {
 
     @Scheduled(cron = "0 0,30 * * * *")
     public void getEvents() {
+        if (checkInspectionTime()) {
+            return ;
+        }
+
         loggingStart("getEvents()");
 
         int addedEventCount = 0;
@@ -117,7 +132,14 @@ public class ScheduleTask {
     // second minute hour date month dayOfWeek
     @Scheduled(cron = "0 */10 * * * *")
     public void getNotices() {
+        if (checkInspectionTime()) {
+            return ;
+        }
+
         loggingStart("getNotices()");
+
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd(E) HH:mm");
+        String cssQuery = "section.article__data div.fr-view p span[style]";
 
         int addedNoticeCount = 0;
         List<Map<String, Object>> mapList = getMapList(connectionUtil.getApiHttpURLConnection("/news/notices"));
@@ -132,6 +154,23 @@ public class ScheduleTask {
             Long result = noticeService.saveNotice(notice);
             if (result > 0) {
                 addedNoticeCount++;
+
+                if (notice.getTitle().contains("점검 안내")) {
+                    try {
+                        String  text = Jsoup.connect(notice.getLink()).get().select(cssQuery).get(1).text();
+                        String[] split = text.split(" ~ ");
+
+                        inspectionTimeService.createInspectionTime(new InspectionTime(
+                                notice,
+                                LocalDateTime.parse(split[0].substring(0, 19), pattern),
+                                LocalDateTime.parse(split[1].substring(0, 19), pattern)
+                        ));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                        // connect exception
+                        // local date time parse exception
+                    }
+                }
             }
         }
 
