@@ -34,11 +34,15 @@ public class MarketItemTradeInfoDaily {
         this.bundleCount = bundleCount;
     }
 
-    public void updateMarketItemTradeInfoDaily(MarketItemTradeInfoDaily marketItemTradeInfoDaily) {
+    public void update(MarketItemTradeInfoDaily marketItemTradeInfoDaily) {
         this.marketItem = marketItemTradeInfoDaily.getMarketItem();
         this.date = marketItemTradeInfoDaily.getDate();
         this.avgPrice = marketItemTradeInfoDaily.getAvgPrice();
         this.tradeCount = marketItemTradeInfoDaily.getTradeCount();
         this.bundleCount = marketItemTradeInfoDaily.getBundleCount();
+    }
+
+    public void updateTradeCount(int tradeCount) {
+        this.tradeCount = tradeCount;
     }
 }

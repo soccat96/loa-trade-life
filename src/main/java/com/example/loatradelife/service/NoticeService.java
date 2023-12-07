@@ -41,7 +41,7 @@ public class NoticeService {
 
     @Transactional
     public void updateNotice(Long id, Notice notice) {
-        noticeRepository.findById(id).ifPresent(value -> value.updateNotice(notice));
+        noticeRepository.findById(id).ifPresent(value -> value.update(notice));
     }
 
     @Transactional

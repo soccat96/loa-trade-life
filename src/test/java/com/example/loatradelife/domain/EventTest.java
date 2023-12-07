@@ -41,7 +41,7 @@ class EventTest {
                 newNow.plusMonths(1).plusWeeks(1)
         );
 
-        event.updateEvent(newEvent);
+        event.update(newEvent);
 
         assertThat(event.getId()).isNull();
         assertThat(event.getTitle()).isEqualTo(newEvent.getTitle());

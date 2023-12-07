@@ -30,7 +30,7 @@ public class ItemGrade {
         this.useAt = useAt;
     }
 
-    public void updateItemGrade(ItemGrade itemGrade) {
+    public void update(ItemGrade itemGrade) {
         this.number = itemGrade.getNumber();
         this.name = itemGrade.getName();;
         this.useAt = itemGrade.getUseAt();

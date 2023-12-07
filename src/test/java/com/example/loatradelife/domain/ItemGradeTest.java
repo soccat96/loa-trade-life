@@ -38,7 +38,7 @@ class ItemGradeTest {
         );
         itemGradeRepository.save(itemGrade);
 
-        itemGrade.updateItemGrade(itemGradeNew);
+        itemGrade.update(itemGradeNew);
         Optional<ItemGrade> findById = itemGradeRepository.findById(itemGrade.getId());
 
         assertThat(findById.isPresent()).isTrue();

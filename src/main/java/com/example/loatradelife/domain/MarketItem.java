@@ -45,7 +45,7 @@ public class MarketItem {
         this.useAt = useAt;
     }
 
-    public void updateMarketItem(MarketItem marketItem) {
+    public void update(MarketItem marketItem) {
         this.categoryCode = marketItem.getCategoryCode();
         this.code = marketItem.getCode();
         this.name = marketItem.getName();

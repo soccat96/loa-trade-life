@@ -34,7 +34,7 @@ public class Notice {
         this.type = type;
     }
 
-    public void updateNotice(Notice notice) {
+    public void update(Notice notice) {
         this.title = notice.getTitle();
         this.date = notice.getDate();
         this.link = notice.getLink();

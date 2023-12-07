@@ -72,7 +72,7 @@ class MarketItemTradeInfoDailyTest {
                 .avgPrice(17.9)
                 .tradeCount(1_000_600)
                 .build();
-        marketItemTradeInfoDaily.updateMarketItemTradeInfoDaily(newOne);
+        marketItemTradeInfoDaily.update(newOne);
         entityManager.flush();
 
         MarketItemTradeInfoDaily findById = entityManager.find(MarketItemTradeInfoDaily.class, marketItemTradeInfoDaily.getId());

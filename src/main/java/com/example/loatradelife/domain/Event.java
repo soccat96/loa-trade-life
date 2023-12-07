@@ -31,7 +31,7 @@ public class Event {
         this.rewardDate = rewardDate;
     }
 
-    public void updateEvent(Event event) {
+    public void update(Event event) {
         this.title = event.getTitle();
         this.thumbnail = event.getThumbnail();
         this.link = event.getLink();

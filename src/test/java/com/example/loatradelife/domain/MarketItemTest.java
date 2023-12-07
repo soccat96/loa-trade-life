@@ -53,7 +53,7 @@ class MarketItemTest {
         );
         marketItemRepository.save(marketItem);
 
-        marketItem.updateMarketItem(newMarketItem);
+        marketItem.update(newMarketItem);
         Optional<MarketItem> findById = marketItemRepository.findById(marketItem.getId());
 
         assertThat(findById.isPresent()).isTrue();

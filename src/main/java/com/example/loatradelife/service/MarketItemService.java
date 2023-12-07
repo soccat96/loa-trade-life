@@ -35,7 +35,7 @@ public class MarketItemService {
     @Transactional
     public void updateMarketItem(long id, MarketItem marketItem) {
         Optional<MarketItem> market = marketItemRepository.findById(id);
-        market.ifPresent(value -> value.updateMarketItem(marketItem));
+        market.ifPresent(value -> value.update(marketItem));
     }
 
     @Transactional

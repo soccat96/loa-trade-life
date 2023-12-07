@@ -36,7 +36,7 @@ class NoticeTest {
                 NoticeType.INSPECTION
         );
 
-        notice.updateNotice(newNotice);
+        notice.update(newNotice);
 
         assertThat(notice.getId()).isNull();
         assertThat(notice.getTitle()).isEqualTo("new notice");

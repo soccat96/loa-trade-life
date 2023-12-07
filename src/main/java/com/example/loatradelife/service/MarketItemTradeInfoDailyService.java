@@ -27,7 +27,7 @@ public class MarketItemTradeInfoDailyService {
         );
         if (findOne.isPresent()) {
             MarketItemTradeInfoDaily existOne = findOne.get();
-            existOne.updateMarketItemTradeInfoDaily(marketItemTradeInfoDaily);
+            existOne.updateTradeCount(marketItemTradeInfoDaily.getTradeCount());
             id = existOne.getId();
         } else {
             id = marketItemTradeInfoDailyRepository.save(marketItemTradeInfoDaily).getId();
@@ -55,7 +55,7 @@ public class MarketItemTradeInfoDailyService {
     @Transactional
     public void updateMarketItemTradeInfoDaily(long id, MarketItemTradeInfoDaily marketItemTradeInfoDaily) {
         Optional<MarketItemTradeInfoDaily> findById = marketItemTradeInfoDailyRepository.findById(id);
-        findById.ifPresent(value -> value.updateMarketItemTradeInfoDaily(marketItemTradeInfoDaily));
+        findById.ifPresent(value -> value.update(marketItemTradeInfoDaily));
     }
 
     @Transactional
