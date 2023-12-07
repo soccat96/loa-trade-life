@@ -32,7 +32,7 @@ public class ItemGrade {
 
     public void update(ItemGrade itemGrade) {
         this.number = itemGrade.getNumber();
-        this.name = itemGrade.getName();;
+        this.name = itemGrade.getName();
         this.useAt = itemGrade.getUseAt();
     }
 
