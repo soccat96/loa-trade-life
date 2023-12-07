@@ -1,13 +1,13 @@
 package com.example.loatradelife.schedule;
 
-import com.example.loatradelife.connection.ConnectionUtil;
+import com.example.loatradelife.connection.ExternalLinkCreator;
 import com.example.loatradelife.domain.*;
 import com.example.loatradelife.service.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,21 +26,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleTask {
-    private final ConnectionUtil connectionUtil;
+    private final ExternalLinkCreator externalLinkCreator;
     private final EventService eventService;
     private final NoticeService noticeService;
     private final InspectionTimeService inspectionTimeService;
     private final MarketItemService marketItemService;
     private final MarketItemTradeInfoDailyService marketItemTradeInfoDailyService;
-
-    private void loggingStart(String methodName) {
-        log.info("start " + methodName + "::==" + LocalDateTime.now());
-    }
-
-    private void loggingEnd(String methodName, int addedEventCount) {
-        log.info("added count::==" + addedEventCount);
-        log.info("end " + methodName + "::==" + LocalDateTime.now());
-    }
 
     private boolean checkInspectionTime() {
         LocalDateTime now = LocalDateTime.now();
@@ -48,12 +40,11 @@ public class ScheduleTask {
     }
 
     private List<Map<String, Object>> getMapList(HttpURLConnection connection) {
-        ObjectMapper ob = new ObjectMapper();
         try {
-            return ob.readValue(connection.getInputStream(), new TypeReference<>() {});
+            return new ObjectMapper().readValue(connection.getInputStream(), new TypeReference<>() {});
         } catch (IOException e) {
-            throw new RuntimeException(e);
-            // data transfer exception
+            log.error("check: response json format", e);
+            throw new RuntimeException();
         }
     }
 
@@ -65,12 +56,11 @@ public class ScheduleTask {
             return ;
         }
 
-        loggingStart("getMarketItemTradeInfoDailies()");
+        log.info("start getMarketItemTradeInfoDailies() " + LocalDateTime.now());
 
-        int addedCount = 0;
         List<MarketItem> marketItemList = marketItemService.findAllMarketItem();
         for (MarketItem marketItem : marketItemList) {
-            List<Map<String, Object>> mapList = getMapList(connectionUtil.getApiHttpURLConnection("/markets/items/" + marketItem.getCode()));
+            List<Map<String, Object>> mapList = getMapList(externalLinkCreator.getApiHttpURLConnection("/markets/items/" + marketItem.getCode()));
             Map<String, Object> obj = mapList.get(0);
             Integer bundleCount = (Integer) obj.get("BundleCount");
             List<Map<String, Object>> dataList = (List<Map<String,Object>>) obj.get("Stats");
@@ -88,14 +78,11 @@ public class ScheduleTask {
                         .bundleCount(bundleCount)
                         .build();
 
-                Long result = marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data);
-                if (result > 0) {
-                    addedCount++;
-                }
+                marketItemTradeInfoDailyService.saveMarketItemTradeInfoDaily(data);
             }
         }
 
-        loggingEnd("getMarketItemTradeInfoDailies()", addedCount);
+        log.info("end getMarketItemTradeInfoDailies() " + LocalDateTime.now());
     }
 
     @Scheduled(cron = "0 0,30 * * * *")
@@ -104,10 +91,9 @@ public class ScheduleTask {
             return ;
         }
 
-        loggingStart("getEvents()");
+        log.info("start getEvents() " + LocalDateTime.now());
 
-        int addedEventCount = 0;
-        List<Map<String, Object>> mapList = getMapList(connectionUtil.getApiHttpURLConnection("/news/events"));
+        List<Map<String, Object>> mapList = getMapList(externalLinkCreator.getApiHttpURLConnection("/news/events"));
         for (Map<String, Object> m : mapList) {
             Event event = new Event(
                     (String) m.get("Title"),
@@ -120,13 +106,10 @@ public class ScheduleTask {
                             : LocalDateTime.parse((String) m.get("RewardDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             );
 
-            Long result = eventService.saveEvent(event);
-            if (result > 0) {
-                addedEventCount++;
-            }
+            eventService.saveEvent(event);
         }
 
-        loggingEnd("getEvents()", addedEventCount);
+        log.info("end getEvents() " + LocalDateTime.now());
     }
 
     // second minute hour date month dayOfWeek
@@ -136,13 +119,12 @@ public class ScheduleTask {
             return ;
         }
 
-        loggingStart("getNotices()");
+        log.info("start getNotices() " + LocalDateTime.now());
 
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd(E) HH:mm");
         String cssQuery = "section.article__data div.fr-view p span[style]";
 
-        int addedNoticeCount = 0;
-        List<Map<String, Object>> mapList = getMapList(connectionUtil.getApiHttpURLConnection("/news/notices"));
+        List<Map<String, Object>> mapList = getMapList(externalLinkCreator.getApiHttpURLConnection("/news/notices"));
         for (Map<String, Object> x : mapList) {
             Notice notice = new Notice(
                     (String) x.get("Title"),
@@ -153,27 +135,26 @@ public class ScheduleTask {
 
             Long result = noticeService.saveNotice(notice);
             if (result > 0) {
-                addedNoticeCount++;
-
                 if (notice.getTitle().contains("점검 안내")) {
-                    try {
-                        String  text = Jsoup.connect(notice.getLink()).get().select(cssQuery).get(1).text();
-                        String[] split = text.split(" ~ ");
+                    Document document = externalLinkCreator.getJsopDocument(notice.getLink());
+                    String text = document.select(cssQuery).get(1).text();
+                    String[] split = text.split(" ~ ");
 
+                    try {
                         inspectionTimeService.createInspectionTime(new InspectionTime(
                                 notice,
                                 LocalDateTime.parse(split[0].substring(0, 19), pattern),
                                 LocalDateTime.parse(split[1].substring(0, 19), pattern)
                         ));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                        // connect exception
-                        // local date time parse exception
+                    } catch (DateTimeParseException e) {
+                        // TODO: 2023/12/06 How to terminate normally other than an exception in @Scheduled...
+                        log.error("check: date time string format", e);
+                        throw new RuntimeException();
                     }
                 }
             }
         }
 
-        loggingEnd("getNotices()", addedNoticeCount);
+        log.info("end getNotices() " + LocalDateTime.now());
     }
 }
