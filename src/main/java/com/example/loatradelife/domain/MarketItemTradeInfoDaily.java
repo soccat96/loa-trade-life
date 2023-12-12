@@ -43,6 +43,6 @@ public class MarketItemTradeInfoDaily {
     }
 
     public void updateTradeCount(int tradeCount) {
-        this.tradeCount = tradeCount;
+        if (this.tradeCount != tradeCount) this.tradeCount = tradeCount;
     }
 }
