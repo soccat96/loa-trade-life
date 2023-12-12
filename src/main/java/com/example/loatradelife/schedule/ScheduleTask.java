@@ -56,7 +56,7 @@ public class ScheduleTask {
             return ;
         }
 
-        log.info("start getMarketItemTradeInfoDailies() " + LocalDateTime.now());
+        log.info("start getMarketItemTradeInfoDailies()");
 
         List<MarketItem> marketItemList = marketItemService.findAllMarketItem();
         for (MarketItem marketItem : marketItemList) {
@@ -82,7 +82,7 @@ public class ScheduleTask {
             }
         }
 
-        log.info("end getMarketItemTradeInfoDailies() " + LocalDateTime.now());
+        log.info("end getMarketItemTradeInfoDailies()");
     }
 
     @Scheduled(cron = "0 0,30 * * * *")
@@ -91,7 +91,7 @@ public class ScheduleTask {
             return ;
         }
 
-        log.info("start getEvents() " + LocalDateTime.now());
+        log.info("start getEvents()");
 
         List<Map<String, Object>> mapList = getMapList(externalLinkCreator.getApiHttpURLConnection("/news/events"));
         for (Map<String, Object> m : mapList) {
@@ -109,7 +109,7 @@ public class ScheduleTask {
             eventService.saveEvent(event);
         }
 
-        log.info("end getEvents() " + LocalDateTime.now());
+        log.info("end getEvents()");
     }
 
     // second minute hour date month dayOfWeek
@@ -119,9 +119,10 @@ public class ScheduleTask {
             return ;
         }
 
-        log.info("start getNotices() " + LocalDateTime.now());
+        log.info("start getNotices()");
 
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd(E) HH:mm");
+        DateTimeFormatter ymd = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter hm = DateTimeFormatter.ofPattern("HH:mm");
         String cssQuery = "section.article__data div.fr-view p span[style]";
 
         List<Map<String, Object>> mapList = getMapList(externalLinkCreator.getApiHttpURLConnection("/news/notices"));
@@ -138,23 +139,29 @@ public class ScheduleTask {
                 if (notice.getTitle().contains("점검 안내")) {
                     Document document = externalLinkCreator.getJsopDocument(notice.getLink());
                     String text = document.select(cssQuery).get(1).text();
-                    String[] split = text.split(" ~ ");
+                    String[] split = text.trim().split(" ~ ");
 
                     try {
                         inspectionTimeService.createInspectionTime(new InspectionTime(
                                 notice,
-                                LocalDateTime.parse(split[0].substring(0, 19), pattern),
-                                LocalDateTime.parse(split[1].substring(0, 19), pattern)
+                                LocalDateTime.of(
+                                        LocalDate.parse(split[0].substring(0, 10), ymd),
+                                        LocalTime.parse(split[0].substring(14, 19), hm)
+                                ),
+                                LocalDateTime.of(
+                                        LocalDate.parse(split[1].substring(0, 10), ymd),
+                                        LocalTime.parse(split[1].substring(14, 19), hm)
+                                )
                         ));
                     } catch (DateTimeParseException e) {
                         // TODO: 2023/12/06 How to terminate normally other than an exception in @Scheduled...
-                        log.error("check: date time string format", e);
+                        log.error("check: date time string format, [" + text + "]", e);
                         throw new RuntimeException();
                     }
                 }
             }
         }
 
-        log.info("end getNotices() " + LocalDateTime.now());
+        log.info("end getNotices()");
     }
 }
