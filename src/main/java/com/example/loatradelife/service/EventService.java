@@ -44,6 +44,7 @@ public class EventService {
         eventRepository.findById(id).ifPresent(value -> value.update(event));
     }
 
+    @Transactional
     public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
     }
