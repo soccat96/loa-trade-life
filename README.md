@@ -271,20 +271,3 @@ http://ec2-3-37-14-93.ap-northeast-2.compute.amazonaws.com/
     }
 }
 ~~~
-
-<br>
-
-### 차후 업데이트 고려 사항
-- Spring REST Docs 또는 Swagger 를 통해 문서 자동화
-- 코드 정리
-- 테스트 환경 변경(테스트 용 데이터(테스트 DB?), 테스트 단위 마다의 새로운 context(멱등성), 테스트 단위 마다의 entity 초기화(멱등성))
-- 테스트 코드 추가
-- Market Item Trade Info Daily 업데이트 방식 변경: JPQL 또는 Query DSL 로 일괄 UPDATE?
-- Query DSL 적용
-- 거래량, 가격과 공지, 이벤트 간의 상관관계-회귀분석
-- Event 도메인 제거(생활재료의 생산과 소비에 영향을 거의 주지 않을 것으로 보임)
-- front-end framework 활용(아마도 Vue.js)
-- Kotlin 코드 추가 혹은 교체(프로젝트를 통째로 교체 할까?)
-- 배포 자동화
-- 도메인 구매
-- Spring Security 적용
